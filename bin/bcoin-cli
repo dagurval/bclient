@@ -169,6 +169,21 @@ class CLI {
   }
 
   async open() {
+
+    let print_usage = (err) => {
+        this.log(err);
+        this.log('Commands:');
+        this.log('  $ info: Get server info.');
+        this.log('  $ broadcast [tx-hex]: Broadcast transaction.');
+        this.log('  $ mempool: Get mempool snapshot.');
+        this.log('  $ tx [hash/address]: View transactions.');
+        this.log('  $ coin [hash+index/address]: View coins.');
+        this.log('  $ block [hash/height]: View block.');
+        this.log('  $ reset [height/hash]: Reset chain to desired block.');
+        this.log('  $ rpc [command] [args]: Execute RPC command.' +
+          ' (`bcoin-cli rpc help` for more)');
+    }
+
     switch (this.argv.shift()) {
       case 'info':
         await this.getInfo();
@@ -192,20 +207,14 @@ class CLI {
         await this.reset();
         break;
       case 'rpc':
+        if (!this.argv.length) {
+            print_usage('Missing arguments');
+            break;
+        }
         await this.rpc();
         break;
       default:
-        this.log('Unrecognized command.');
-        this.log('Commands:');
-        this.log('  $ info: Get server info.');
-        this.log('  $ broadcast [tx-hex]: Broadcast transaction.');
-        this.log('  $ mempool: Get mempool snapshot.');
-        this.log('  $ tx [hash/address]: View transactions.');
-        this.log('  $ coin [hash+index/address]: View coins.');
-        this.log('  $ block [hash/height]: View block.');
-        this.log('  $ reset [height/hash]: Reset chain to desired block.');
-        this.log('  $ rpc [command] [args]: Execute RPC command.' + 
-          ' (`bcoin-cli rpc help` for more)');
+        print_usage('Unrecognized command.');
         break;
     }
   }
